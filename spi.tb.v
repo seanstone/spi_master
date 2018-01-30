@@ -43,7 +43,7 @@ module spi_tb;
     end
 
     always @ (negedge BUSY) begin
-        START = 1; # 1 START = 0;
+        #1 START = 1; # 1 START = 0;
     end
 
 endmodule

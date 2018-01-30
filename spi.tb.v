@@ -8,6 +8,7 @@ module spi_tb;
     wire MISO;
     wire MOSI;
     reg START = 0;
+    wire BUSY;
     reg [7:0] MASTER_DOUT = 8'h 56;
     wire [7:0] MASTER_DIN;
     reg [7:0] SLAVE_DOUT = 8'h 34;
@@ -20,6 +21,7 @@ module spi_tb;
         .MISO(MISO),
         .MOSI(MOSI),
         .START(START),
+        .BUSY(BUSY),
         .DIN(MASTER_DIN),
         .DOUT(MASTER_DOUT)
     );
@@ -37,7 +39,11 @@ module spi_tb;
         $dumpfile("sim/spi.vcd");
         $dumpvars(0, spi_tb);
         # 5 START = 1; # 1 START = 0;
-        # 30 $finish;
+        # 60 $finish;
+    end
+
+    always @ (negedge BUSY) begin
+        START = 1; # 1 START = 0;
     end
 
 endmodule

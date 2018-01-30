@@ -1,17 +1,17 @@
-TOP := spi_master
-HDLSRC += $(filter-out $(wildcard *.tb.v), $(wildcard *.v))
+# TOP := spi_master
+# HDLSRC += $(filter-out $(wildcard *.tb.v), $(wildcard *.v))
 
 .PHONY: sim
-sim: sim/$(TOP).tb
+sim: sim/spi.tb
 	$<
 
-sim/%.tb: %.v %.tb.v
+sim/spi.tb: spi.tb.v spi_master.v spi_slave.v
 	mkdir -p sim/
 	iverilog $^ -o $@
 
 .PHONY: wav
 wav: sim
-	gtkwave sim/$(TOP).vcd
+	gtkwave sim/spi.vcd
 
 .PHONY: blif
 blif: $(patsubst %.v, build/%.blif, $(HDLSRC))

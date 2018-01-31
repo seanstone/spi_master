@@ -10,7 +10,7 @@ module spi_slave_m (input CS, input SCK, output MISO, input MOSI, input [7:0] DO
 
     always @ (posedge SCK) begin
         if (!CS) begin
-            DIN[n] = MOSI;
+            DIN[n] <= MOSI;
         end
     end
 

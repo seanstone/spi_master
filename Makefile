@@ -14,9 +14,9 @@ wav: sim
 	gtkwave sim/spi.vcd
 
 .PHONY: blif
-blif: $(patsubst %.v, build/%.blif, $(HDLSRC))
+blif: build/spi.blif
 
-build/%.blif: %.v
+build/spi.blif: spi_master.v
 	mkdir -p build/
 	yosys -q -S $^ -o $@
 

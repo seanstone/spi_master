@@ -5,29 +5,32 @@ module spi_master_m (input CLK, input START, output BUSY, input [7:0] DOUT, outp
 
     reg [3:0] n = 0;
     wire [3:0] SCK_n = 7 - (n - (t_post + 1));
-    wire SCK_output = 0 <= SCK_n && SCK_n <= 7;
+    wire SCK_output = BUSY && 0 <= SCK_n && SCK_n <= 7;
     assign BUSY = n > 0;
     assign SCK = SCK_output && CLK;
     assign MOSI = SCK_output && DOUT[SCK_n];
     assign CS = !BUSY;
 
-    always @ (negedge CLK) begin
-        if (n > 0) begin
-            n <= n - 1;
-        end
-    end
+    always @ (CLK) begin
 
-    always @ (posedge CLK) begin
-        if (SCK_output) begin
-            DIN[SCK_n] = MISO;
+        if (CLK) begin // posedge
+            if (SCK_output) begin
+                DIN[SCK_n] <= MISO; // sample MISO at posedge
+            end
         end
-    end
+        else begin // negedge
+            if (BUSY) begin
+                n <= n - 1; // shift MOSI at negedge
+            end
+        end
 
-    always @ (posedge START) begin
-        if (!BUSY) begin
-            n <= 7 + (t_pre + 1) + (t_post + 1);
-            DIN = 0;
+        if (START) begin
+            if (!BUSY) begin
+                n <= 7 + (t_pre + 1) + (t_post + 1);
+                DIN <= 0;
+            end
         end
+
     end
 
 endmodule

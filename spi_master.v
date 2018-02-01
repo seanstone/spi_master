@@ -1,4 +1,4 @@
-module spi_master_m (input CLK, input START, output BUSY, input [7:0] DOUT, output reg [7:0] DIN = 0, output CS, output SCK, input MISO, output MOSI);
+module spi_master_m (input CLK, output BUSY, output TXE = 1, input [7:0] DOUT, output [7:0] DIN, output CS, output SCK, input MISO, output MOSI);
 
     parameter t_pre = 0;
     parameter t_post = 0;
@@ -26,14 +26,17 @@ module spi_master_m (input CLK, input START, output BUSY, input [7:0] DOUT, outp
             end
         end
 
-        if (START) begin
-            if (!BUSY) begin
-                n <= 7 + (t_pre + 1) + (t_post + 1);
-                dout <= DOUT; // sample DOUT at start of transfer command
-                DIN <= 0;
-            end
+        if (!BUSY && !TXE) begin
+            n <= 7 + (t_pre + 1) + (t_post + 1);
+            dout <= DOUT; // sample DOUT at start of transfer command
+            TXE <= 1;
+            DIN <= 0;
         end
 
+    end
+
+    always @ (DOUT) begin
+        TXE <= 0;
     end
 
 endmodule
